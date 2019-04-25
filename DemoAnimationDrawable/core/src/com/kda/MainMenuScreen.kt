@@ -3,7 +3,6 @@ package com.kda
 import animated.AnimatedHumanDrawable
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ScreenAdapter
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -16,22 +15,19 @@ import com.badlogic.gdx.utils.Array as UIArray
 class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
     private val stage: Stage = Stage(FitViewport(game.screenWidth, game.screenHeight))
     private val player = AnimatedHumanDrawable(game,300f,300f,"right")
-    private val backColor:Color = Color.BLACK //for human skin
-    private val frontColor:Color = Color.WHITE //for human skin
 
     override fun show() {
         Gdx.input.inputProcessor = stage
-        stage.isDebugAll = true
-        val img = Image(game.aniskin.getDrawable("move-skin-male-back-R-0"))
-        stage.addActor(img)
 
-        val sprite = player.viewBox()
+        stage.isDebugAll = true //turn on frames around objects
 
-//        box.add(sprite)// imageAnimation case
-        stage.addActor(sprite)
-//        sprite.setPosition(game.screenWidth/2-100, game.screenHeight/2-100)
-//        sprite.setPosition(10f, 10f)
+        val img = Image(game.aniskin.getDrawable("move-skin-male-back-R-0")) //simple image for comparing
 
+        stage.addActor(img) //image added on stage and will be rendered as part of stage
+
+        val sprite = player.viewBox() //actor of type Table which will be added to stage as sprite(box with animated image)
+
+        stage.addActor(sprite) //animated extended image added on stage and will be rendered as part of stage
     }
 
     override fun resize(width: Int, height: Int) {
@@ -42,10 +38,11 @@ class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
         super.render(delta)
         Gdx.gl.glClearColor(0f, 0.5f, 0.5f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        player.calculateAction(delta)
-        println(game.screenWidth)
-        stage.act(delta);
-        stage.draw();
+
+        player.calculateAction(delta) //call player method for calculation moving on screen and mirroring animation
+
+        stage.act(delta)
+        stage.draw()
 
     }
 }

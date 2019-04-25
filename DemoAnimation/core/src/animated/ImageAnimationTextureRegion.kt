@@ -34,7 +34,10 @@ class ImageAnimationTextureRegion : Image() {
         this.time += delta * this.speed
         if (this.animation != null && this.animation!!.animationDuration > 0) {
             val frame = this.animation!!.getKeyFrame(this.time, true)
-            this.drawable = TextureRegionDrawable(frame)
+            this.setDrawable(TextureRegionDrawable(frame))
+            this.pack()
+            this.setPosition(10f + frame.regionX, 10f + frame.regionY)
+//            this.drawable = TextureRegionDrawable(frame)
             this.invalidateHierarchy()
             this.invalidate()
             println("frame inside act")

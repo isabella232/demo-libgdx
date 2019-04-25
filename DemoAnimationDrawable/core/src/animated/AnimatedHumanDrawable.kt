@@ -9,7 +9,6 @@ import com.kda.KDA
 
 class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float , private val boxHeight:Float, private var direction:String) {
     /** right or left*/
-    fun getDirection() = direction
     fun setDirection(side:String){
         if (side == "left"){ this.stack.setScale(-1f,1f); this.direction = side}
         else if (side == "right"){ this.stack.setScale(1f,1f); this.direction = side}
@@ -25,7 +24,7 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
     init {
         this.stack.addActor(img)
         this.stack.setOrigin(this.boxWidth/2,this.boxHeight/2)
-
+        //boxWidth and boxHeight used that calculate axes of mirroring at center of each Drawable 300x300px in this case
         this.box.add(stack)
     }
     private fun createAnimationDrawable(names:UIArray<String>):Animation<Drawable>{
@@ -46,6 +45,7 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
         img.setAnimation(ani)
     }
 
+    /** calculate moving direction and animation mirroring depend of position on Stage object of screen*/
     fun calculateAction(delta:Float){
         if (this.direction == "right"){
             if (this.box.x > 640) {
