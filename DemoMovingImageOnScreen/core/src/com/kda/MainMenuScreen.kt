@@ -29,7 +29,7 @@ class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
         Gdx.gl.glClearColor(0f, 0.5f, 0.5f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if(Gdx.input.justTouched()) println("before calculateAction box.x= "+sprite.x.toString()) //500 always
-        player.calculateAction(delta) //call player method for calculation moving on screen and mirroring animation
+        player.calculateAction(delta) //call player method for calculation moving on screen
         println(sprite.x) //print normal as expected
         stage.act(delta)
         stage.draw()
