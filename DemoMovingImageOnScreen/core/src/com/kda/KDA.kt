@@ -10,7 +10,8 @@ class KDA : Game() {
     internal var screenWidth:Float = 0.0f
     internal var screenHeight:Float = 0.0f
     internal val aniskin:AniSkin = AniSkin() //incuded human.atlas TextureAtlas for animation
-
+    private var fresh:Boolean = true
+    
     override fun create() {
         screenWidth = Gdx.graphics.width.toFloat()
         screenHeight = Gdx.graphics.height.toFloat()
@@ -21,8 +22,9 @@ class KDA : Game() {
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        if (Gdx.input.justTouched()){
+        if (fresh && Gdx.input.justTouched()){
             setScreen(MainMenuScreen(this))
+            fresh = false
         }
         super.render()
     }
