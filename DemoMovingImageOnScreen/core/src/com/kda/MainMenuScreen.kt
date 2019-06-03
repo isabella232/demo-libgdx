@@ -33,6 +33,5 @@ class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
         println(sprite.x) //print normal as expected
         stage.act(delta)
         stage.draw()
-
     }
 }
