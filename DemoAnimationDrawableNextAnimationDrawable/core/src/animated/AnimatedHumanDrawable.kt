@@ -60,35 +60,31 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
     private var newX:Int = -1
     private var oldX:Int = -1
     private fun refreshTouchX(x:Int){
-        printPair("-------------\n-------------\nrefreshTouchX\noldXbefore= ",oldX)
-        printPair("newXbefore= ",newX)
-        this.oldX = this.newX
-        this.newX = x
+        printPair("inside refreshTouch box.x= ",box.x)
+        oldX = newX
+        newX = x
         printPair("oldX",oldX)
         printPair("newX",newX)
     }
     
     /** calculate moving direction and animation mirroring depend of position on Stage object of screen*/
     fun calculateAction(delta:Float){
-        printPair("--------------\ncalculateAction\nbox.x= ",box.x)
-        printPair("this.newX= ",this.newX)
-        printPair("this.oldX= ",this.oldX)
         //moving section
-        if(Gdx.input.justTouched()) {refreshTouchX(Gdx.input.x)}
+        if(Gdx.input.justTouched()) {
+            printPair("before refreshTouch box.x= ",box.x)
+            refreshTouchX(Gdx.input.x)
+        }
         if (box.x > newX){ //need move left
-//            if (direction =="right") setDirection("left") //mirror animation on screen
+            if (direction =="right") setDirection("left") //mirror animation on screen
             box.x-=(100*delta).toInt() //offset along x direction on screen
         }else if (box.x < newX){ //need move right
-//            if (direction =="left") setDirection("right")
+            if (direction =="left") setDirection("right")
             box.x+=(100*delta).toInt()
         }
         
         //2d animation section.
         // Switch left step and right step animations when previous animation finished.
         if (aniBox[presentAnimation].isAnimationFinished(aniBox[presentAnimation].animationDuration)) switchPresentAnimation()
-        printPair("after move dx\nbox.x = ",box.x)
-        printPair("newX= ",newX)
-        printPair("oldX= ",oldX)
     }
 
 }
