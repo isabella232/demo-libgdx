@@ -1,0 +1,76 @@
+
+human.png
+size: 128,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+move-skin-male-back-R-0
+  rotate: false
+  xy: 79, 398
+  size: 38, 99
+  orig: 300, 300
+  offset: 133, 79
+  index: -1
+move-skin-male-back-R-L1
+  rotate: false
+  xy: 2, 99
+  size: 61, 98
+  orig: 300, 300
+  offset: 118, 79
+  index: -1
+move-skin-male-back-R-L2
+  rotate: false
+  xy: 2, 299
+  size: 73, 99
+  orig: 300, 300
+  offset: 108, 78
+  index: -1
+move-skin-male-back-R-R1
+  rotate: false
+  xy: 69, 198
+  size: 57, 97
+  orig: 300, 300
+  offset: 119, 80
+  index: -1
+move-skin-male-back-R-R2
+  rotate: false
+  xy: 2, 400
+  size: 75, 97
+  orig: 300, 300
+  offset: 109, 80
+  index: -1
+move-skin-male-front-R-0
+  rotate: false
+  xy: 77, 297
+  size: 35, 99
+  orig: 300, 300
+  offset: 135, 79
+  index: -1
+move-skin-male-front-R-L1
+  rotate: false
+  xy: 65, 100
+  size: 57, 96
+  orig: 300, 300
+  offset: 120, 81
+  index: -1
+move-skin-male-front-R-L2
+  rotate: false
+  xy: 2, 199
+  size: 65, 98
+  orig: 300, 300
+  offset: 111, 79
+  index: -1
+move-skin-male-front-R-R1
+  rotate: false
+  xy: 70, 3
+  size: 52, 95
+  orig: 300, 300
+  offset: 122, 82
+  index: -1
+move-skin-male-front-R-R2
+  rotate: false
+  xy: 2, 2
+  size: 66, 95
+  orig: 300, 300
+  offset: 112, 82
+  index: -1
