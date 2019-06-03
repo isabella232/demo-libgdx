@@ -19,10 +19,7 @@ class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
     
     override fun show() {
         Gdx.input.inputProcessor = stage
-
         stage.isDebugAll = true //turn on frames around objects
-
-        
         sprite.x = 500f
         stage.addActor(sprite) //animated extended image added on stage and will be rendered as part of stage
     }

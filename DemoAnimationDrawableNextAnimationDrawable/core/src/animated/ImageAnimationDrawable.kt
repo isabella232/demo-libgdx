@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 
 class ImageAnimationDrawable : Image() {
     private var time:Float = 0f
+    fun getTime() = time
     protected var speed:Float = 1f //can be used that manipulate speed of animation
 
     private var animation: Animation<Drawable>? = null //Animation which use Drawable from game.aniskin as frames

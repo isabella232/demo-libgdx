@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.Array as UIArray
 import com.badlogic.gdx.utils.ArrayMap as UIMap
 import com.kda.KDA
@@ -21,6 +22,8 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
         presentAnimation = if (presentAnimation == "stepL") "stepR" else "stepL"
         img.setAnimation(aniBox[presentAnimation])
     }
+    
+    private var lastTimeElapsed:Float = TimeUtils.millis()/1000.toFloat()
     
     private val box = Table()
     fun viewBox() = box
@@ -60,31 +63,33 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
     private var newX:Int = -1
     private var oldX:Int = -1
     private fun refreshTouchX(x:Int){
-        printPair("inside refreshTouch box.x= ",box.x)
         oldX = newX
         newX = x
-        printPair("oldX",oldX)
-        printPair("newX",newX)
     }
     
     /** calculate moving direction and animation mirroring depend of position on Stage object of screen*/
     fun calculateAction(delta:Float){
         //moving section
-//        if(Gdx.input.justTouched()) {
-//            printPair("before refreshTouch box.x= ",box.x)
-//            refreshTouchX(Gdx.input.x)
-//        }
-        if (box.x > Gdx.input.x){ //need move left
-//            if (direction =="right") setDirection("left") //mirror animation on screen
-            box.x-=(100*delta).toInt().toFloat() //offset along x direction on screen
-        }else if (box.x < Gdx.input.x){ //need move right
-//            if (direction =="left") setDirection("right")
-            box.x+=(100*delta).toInt().toFloat()
+        if(Gdx.input.justTouched()) refreshTouchX(Gdx.input.x)
+        if (box.x > newX){ //need move left
+            if (direction =="right") setDirection("left") //mirror animation on screen
+            box.x-=(300*delta).toInt().toFloat() //offset along x direction on screen
+        }else if (box.x < newX){ //need move right
+            if (direction =="left") setDirection("right")
+            box.x+=(300*delta).toInt().toFloat()
         }
         
         //2d animation section.
         // Switch left step and right step animations when previous animation finished.
-//        if (aniBox[presentAnimation].isAnimationFinished(aniBox[presentAnimation].animationDuration)) switchPresentAnimation()
+        if (aniBox[presentAnimation].isAnimationFinished(img.getTime())) {
+            printPair("before switchPresentAnimation aniBox[presentAnimation]",aniBox[presentAnimation])
+            printPair("aniBox[presentAnimation].animationDuration",aniBox[presentAnimation].animationDuration)
+            printPair("presentAnimation",presentAnimation)
+            val stampSec:Float = TimeUtils.nanoTime()/1_000_000_000.toFloat()
+            printPair("TimeElapsed",(stampSec - lastTimeElapsed))
+            lastTimeElapsed = stampSec
+            switchPresentAnimation()
+        }
     }
 
 }
