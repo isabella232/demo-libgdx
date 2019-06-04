@@ -1,0 +1,236 @@
+//--------
+//KDA.kt
+//--------
+
+package com.kda
+
+import com.badlogic.gdx.Game
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
+
+import gui.AnimationSkin as AniSkin
+
+class KDA : Game() {
+    internal var screenWidth:Float = 0.0f
+    internal var screenHeight:Float = 0.0f
+    internal val aniskin:AniSkin = AniSkin() //incuded human.atlas TextureAtlas for animation
+    private var fresh:Boolean = true //need that execute setScreen(MainMenuScreen(this)) only once
+
+    override fun create() {
+        screenWidth = Gdx.graphics.width.toFloat()
+        screenHeight = Gdx.graphics.height.toFloat()
+        aniskin.prepare() //call preparing method for connect human.atlas for later using for animation
+    }
+
+    override fun render() {
+        Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        if (fresh && Gdx.input.justTouched()){
+            fresh = false
+            setScreen(MainMenuScreen(this))
+        }
+        super.render()
+    }
+}
+
+
+//-------------------
+//AnimationSkin.kt
+//-------------------
+
+package gui
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+
+class AnimationSkin : Skin() {
+
+    fun prepare(){
+        addRegions(TextureAtlas(Gdx.files.internal("animation/human.atlas")))
+        /* human animation atlas added into Skin instance, and can be later used
+        later in code as Drawable with autorebuild whitespace borders, which is comfort and compact
+         */
+    }
+}
+
+
+//----------------------
+//MainMenuScreen.kt
+//----------------------
+
+package com.kda
+
+import animated.AnimatedHumanDrawable
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ScreenAdapter
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.*
+
+import com.badlogic.gdx.utils.viewport.FitViewport
+
+import com.badlogic.gdx.scenes.scene2d.ui.List as UIList
+import com.badlogic.gdx.utils.Array as UIArray
+
+class MainMenuScreen(private val game: KDA) : ScreenAdapter() {
+    private val stage: Stage = Stage(FitViewport(game.screenWidth, game.screenHeight))
+    private val player = AnimatedHumanDrawable(game,300f,300f,"right")
+    private val sprite = player.viewBox() //Table() actor included Group() with ImageAnimationDrawable as child
+
+    override fun show() {
+        Gdx.input.inputProcessor = stage
+        stage.isDebugAll = true //turn on frames around objects
+        sprite.x = 500f //move close to center, or will be placed in left bottom corner of screen
+        stage.addActor(sprite) //animated extended image added on stage and will be rendered as part of stage
+    }
+
+    override fun resize(width: Int, height: Int) {
+        stage.viewport.update(width, height, true)
+    }
+
+    override fun render(delta: Float) {
+        super.render(delta)
+        Gdx.gl.glClearColor(0f, 0.5f, 0.5f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        player.calculateAction(delta) //call player method for calculation moving on screen and mirroring animation
+        stage.act(delta)
+        stage.draw()
+
+    }
+}
+
+
+//--------------------------------
+//AnimatedHumanDrawable.kt
+//--------------------------------
+
+package animated
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.utils.TimeUtils
+import com.badlogic.gdx.utils.Array as UIArray
+import com.badlogic.gdx.utils.ArrayMap as UIMap
+import com.kda.KDA
+
+class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float , private val boxHeight:Float, private var direction:String) {
+    /** right or left. Mirror Table() actor on screen aroung center vertical axis of sprite, which is viewbox*/
+    fun setDirection(side:String){
+        if (side == "left"){ this.stack.setScale(-1f,1f); this.direction = side}
+        else if (side == "right"){ this.stack.setScale(1f,1f); this.direction = side}
+    }
+    /**stepL or stepR animations*/
+    private var presentAnimation = "stepL"
+    private fun switchPresentAnimation() {
+        presentAnimation = if (presentAnimation == "stepL") "stepR" else "stepL"
+        img.setAnimation(aniBox[presentAnimation]) //start new animation
+    }
+
+    private val box = Table()
+    fun viewBox() = box
+    private val stack = Group()
+    private val img = ImageAnimationDrawable()
+    //names of drawables from game.aniskin for animation of left leg step and right leg step
+    private val namesL = UIArray<String>(arrayOf("move-skin-male-back-R-0","move-skin-male-back-R-L1","move-skin-male-back-R-L2","move-skin-male-back-R-L1"))
+    private val namesR = UIArray<String>(arrayOf("move-skin-male-back-R-0","move-skin-male-back-R-R1","move-skin-male-back-R-R2","move-skin-male-back-R-R1"))
+    init {
+        this.stack.addActor(img)
+        this.stack.setOrigin(this.boxWidth/2,this.boxHeight/2)
+        //boxWidth and boxHeight used that calculate axes of mirroring at center of each Drawable 300x300px in this case
+        this.box.add(stack)
+    }
+    private fun createAnimationDrawable(names:UIArray<String>):Animation<Drawable>{
+        val frames = UIArray<Drawable>()
+        frames.setSize(names.size)
+        for (i in 0 until names.size) {
+            val path = names[i]
+            val drawable = game.aniskin.getDrawable(path)
+            frames[i] = drawable
+        }
+        return Animation(0.1f, frames)
+    }
+
+    private val aniL = createAnimationDrawable(namesL)
+    private val aniR = createAnimationDrawable(namesR)
+    private val aniBox = UIMap<String, Animation<Drawable>>(2)
+    init {
+        aniL.playMode = Animation.PlayMode.NORMAL
+        aniR.playMode = Animation.PlayMode.NORMAL
+        aniBox.put("stepL",aniL)
+        aniBox.put("stepR",aniR)
+        img.setAnimation(aniBox[presentAnimation])
+    }
+
+    private var newX:Int = -1
+    private var oldX:Int = -1
+    private fun refreshTouchX(x:Int){
+        oldX = newX
+        newX = x
+    }
+
+    /** calculate moving direction and animation mirroring depend of position on Stage object of screen*/
+    fun calculateAction(delta:Float){
+        //moving section
+        if(Gdx.input.justTouched()) refreshTouchX(Gdx.input.x)
+        if (box.x > newX){ //need move left
+            if (direction =="right") setDirection("left") //mirror animation on screen
+            box.x-=(300*delta).toInt().toFloat() //offset along x direction on screen
+        }else if (box.x < newX){ //need move right
+            if (direction =="left") setDirection("right")
+            box.x+=(300*delta).toInt().toFloat()
+        }
+
+        //2d animation section.
+        // Switch left leg step and right leg step animations when previous animation finished.
+        if (aniBox[presentAnimation].isAnimationFinished(img.getTime())) {
+            val stampSec:Float = TimeUtils.nanoTime()/1_000_000_000.toFloat() //seconds of system timer
+            switchPresentAnimation() // switch rigth -> left -> right loop leg animations
+        }
+    }
+
+}
+
+
+//-------------------------------
+//ImageAnimationDrawable.kt
+//-------------------------------
+
+package animated
+
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+
+class ImageAnimationDrawable : Image() {
+    private var time:Float = 0f //will be reset to 0 every new animation started
+    fun getTime() = time //need outside that determine Animation.isAnimationFinished(stateTime)
+    protected var speed:Float = 1f //can be used that manipulate speed of animation
+
+    private var animation: Animation<Drawable>? = null //Animation which use Drawable from game.aniskin as frames
+    fun setAnimation(animation: Animation<Drawable>) {
+        this.time = 0f //reset time to 0, used for calculation of returned animation frame
+        this.animation = animation
+    }
+
+    override fun act(delta: Float) {
+        this.time += delta * speed
+        if (animation != null && animation!!.animationDuration > 0) {
+            val frame = animation!!.getKeyFrame(time, true)
+            this.drawable = frame
+            this.pack()
+            this.invalidateHierarchy()
+            this.invalidate()
+        } else {
+            println("act fail statement")
+            println(animation)
+        }
+        super.act(delta)
+    }
+}
+
+
