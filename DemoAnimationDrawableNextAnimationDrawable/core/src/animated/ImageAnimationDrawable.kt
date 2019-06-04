@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 
 class ImageAnimationDrawable : Image() {
-    private var time:Float = 0f
-    fun getTime() = time
+    private var time:Float = 0f //will be reset to 0 every new animation started
+    fun getTime() = time //need outside that determine Animation.isAnimationFinished(stateTime)
     protected var speed:Float = 1f //can be used that manipulate speed of animation
 
     private var animation: Animation<Drawable>? = null //Animation which use Drawable from game.aniskin as frames
@@ -24,7 +24,6 @@ class ImageAnimationDrawable : Image() {
             this.invalidateHierarchy()
             this.invalidate()
         } else {
-            // setDrawable(null)
             println("act fail statement")
             println(animation)
         }

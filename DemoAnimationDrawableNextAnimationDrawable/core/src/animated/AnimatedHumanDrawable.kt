@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.ArrayMap as UIMap
 import com.kda.KDA
 
 class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float , private val boxHeight:Float, private var direction:String) {
-    /** right or left*/
+    /** right or left. Mirror Table() actor on screen aroung center vertical axis of sprite, which is viewbox*/
     fun setDirection(side:String){
         if (side == "left"){ this.stack.setScale(-1f,1f); this.direction = side}
         else if (side == "right"){ this.stack.setScale(1f,1f); this.direction = side}
@@ -20,15 +20,14 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
     private var presentAnimation = "stepL"
     private fun switchPresentAnimation() {
         presentAnimation = if (presentAnimation == "stepL") "stepR" else "stepL"
-        img.setAnimation(aniBox[presentAnimation])
+        img.setAnimation(aniBox[presentAnimation]) //start new animation
     }
-    
-    private var lastTimeElapsed:Float = TimeUtils.millis()/1000.toFloat()
     
     private val box = Table()
     fun viewBox() = box
     private val stack = Group()
     private val img = ImageAnimationDrawable()
+    //names of drawables from game.aniskin for animation of left leg step and right leg step
     private val namesL = UIArray<String>(arrayOf("move-skin-male-back-R-0","move-skin-male-back-R-L1","move-skin-male-back-R-L2","move-skin-male-back-R-L1"))
     private val namesR = UIArray<String>(arrayOf("move-skin-male-back-R-0","move-skin-male-back-R-R1","move-skin-male-back-R-R2","move-skin-male-back-R-R1"))
     init {
@@ -59,7 +58,6 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
         img.setAnimation(aniBox[presentAnimation])
     }
     
-    private fun printPair(name:Any,value:Any) { println(name.toString() + "= "+value.toString())}
     private var newX:Int = -1
     private var oldX:Int = -1
     private fun refreshTouchX(x:Int){
@@ -80,15 +78,10 @@ class AnimatedHumanDrawable(private  val game:KDA , private val boxWidth:Float ,
         }
         
         //2d animation section.
-        // Switch left step and right step animations when previous animation finished.
+        // Switch left leg step and right leg step animations when previous animation finished.
         if (aniBox[presentAnimation].isAnimationFinished(img.getTime())) {
-            printPair("before switchPresentAnimation aniBox[presentAnimation]",aniBox[presentAnimation])
-            printPair("aniBox[presentAnimation].animationDuration",aniBox[presentAnimation].animationDuration)
-            printPair("presentAnimation",presentAnimation)
-            val stampSec:Float = TimeUtils.nanoTime()/1_000_000_000.toFloat()
-            printPair("TimeElapsed",(stampSec - lastTimeElapsed))
-            lastTimeElapsed = stampSec
-            switchPresentAnimation()
+            val stampSec:Float = TimeUtils.nanoTime()/1_000_000_000.toFloat() //seconds of system timer
+            switchPresentAnimation() // switch rigth -> left -> right loop leg animations
         }
     }
 

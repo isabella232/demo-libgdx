@@ -10,7 +10,7 @@ class KDA : Game() {
     internal var screenWidth:Float = 0.0f
     internal var screenHeight:Float = 0.0f
     internal val aniskin:AniSkin = AniSkin() //incuded human.atlas TextureAtlas for animation
-    private var fresh:Boolean = true
+    private var fresh:Boolean = true //need that execute setScreen(MainMenuScreen(this)) only once
     
     override fun create() {
         screenWidth = Gdx.graphics.width.toFloat()
