@@ -1,10 +1,16 @@
 package com.kda
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Net
+import com.badlogic.gdx.Net.HttpMethods
+import com.badlogic.gdx.Net.HttpRequest
+import com.badlogic.gdx.Net.HttpResponse
+import com.badlogic.gdx.Net.HttpResponseListener
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.net.HttpParametersUtils
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -15,6 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.Array as UIArray
+import com.badlogic.gdx.utils.ArrayMap as UIMap
 
 class MenuScreen(val game:KDA) : ScreenAdapter() {
     val stage: Stage = Stage(FitViewport(game.screenWidth, game.screenHeight)) //for Actors
@@ -33,9 +41,30 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
     
     private fun saveData(){ mc.putInteger("clicks",clicks); mc.flush()}/*set new value and fix changes*/
     private fun loadData(){ clicks = mc.getInteger("clicks",0) } //0 default if empty
+    
     /**write clicks to free pythonanywhere.com bottlepy server, prepared earlier + label message*/
     private fun writeServer(){
         var serverResponse = "test write text"
+        val req = HttpRequest(HttpMethods.POST)
+        req.url = ""
+//        var par = UIMap<String, String>()
+//        par.put("clicks",clicks.toString())
+        val par = mapOf<String,String>("clicks" to "$clicks")
+        req.setContent(HttpParametersUtils.convertHttpParameters(par))
+        
+        Gdx.net.sendHttpRequest(req, object: HttpResponseListener{
+            override fun cancelled() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+    
+            override fun failed(t: Throwable?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+    
+            override fun handleHttpResponse(httpResponse: HttpResponse?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
         
         labelShowServer!!.setText(serverResponse)
     }
