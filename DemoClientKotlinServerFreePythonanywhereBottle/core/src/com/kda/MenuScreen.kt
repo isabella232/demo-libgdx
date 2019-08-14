@@ -1,7 +1,6 @@
 package com.kda
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Net
 import com.badlogic.gdx.Net.HttpMethods
 import com.badlogic.gdx.Net.HttpRequest
 import com.badlogic.gdx.Net.HttpResponse
@@ -21,10 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.badlogic.gdx.utils.Array as UIArray
-import com.badlogic.gdx.utils.ArrayMap as UIMap
 
-class MenuScreen(val game:KDA) : ScreenAdapter() {
+class MenuScreen(private val game:KDA) : ScreenAdapter() {
     val stage: Stage = Stage(FitViewport(game.screenWidth, game.screenHeight)) //for Actors
     val uiskin: Skin = Skin() //val = no need "?" for nullsafety and "!!" that check not null
     val table: Table = Table() //button keeper, no need skin inside constructor in this case
@@ -39,18 +36,16 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
     
     var clicks:Int = 0
     
+    /*this functions allow save/load data into preconfigured libgdx app storage when app closed/reopened later*/
     private fun saveData(){ mc.putInteger("clicks",clicks); mc.flush()}/*set new value and fix changes*/
     private fun loadData(){ clicks = mc.getInteger("clicks",0) } //0 default if empty
     
     /**write clicks to free pythonanywhere.com bottlepy server, prepared earlier + label message*/
     private fun writeServer(){
-        var serverResponse = "test write text"
         val req = HttpRequest(HttpMethods.POST)
-        req.url = "http://demotest.pythonanywhere.com/write/"
-//        var par = UIMap<String, String>()
-//        par.put("clicks",clicks.toString())
-        val par = mapOf<String,String>("clicks" to "$clicks")
-        req.setContent(HttpParametersUtils.convertHttpParameters(par))
+        req.url = "http://demotest.pythonanywhere.com/write/" /*same as python side server @route value*/
+        val par = mapOf("clicks" to "$clicks") /*constructor need form of kotlin mutable map*/
+        req.setContent(HttpParametersUtils.convertHttpParameters(par)) /*convert map to url param form of post method*/
         
         Gdx.net.sendHttpRequest(req, object: HttpResponseListener{
             override fun cancelled() {
@@ -62,15 +57,12 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
             }
     
             override fun handleHttpResponse(httpResponse: HttpResponse?) {
-                labelShowServer!!.setText(httpResponse!!.resultAsString)
+                labelShowServer!!.setText(httpResponse!!.resultAsString) /*data from python bottlepy server side as string*/
             }
         })
-        
-        labelShowServer!!.setText(serverResponse)
     }
     /**read clicks from server and show it as label text*/
     private fun readServer(){
-        var serverResponse = "test read text"
         val req = HttpRequest(HttpMethods.GET)
         req.url = "http://demotest.pythonanywhere.com/read/"
         Gdx.net.sendHttpRequest(req, object: HttpResponseListener{
@@ -86,8 +78,7 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
                 labelShowServer!!.setText(httpResponse!!.resultAsString)
             }
         })
-    
-        labelShowServer!!.setText(serverResponse)
+        
     }
     
     override fun show() {

@@ -1,0 +1,55 @@
+# python file bottle_demo.py
+# this is test application/server. one file based. pythonanywhere.com
+# Need to be refreshed free once per 3 months, because free account
+
+# A very simple Bottle Hello World app for you to get started with...
+from bottle import default_app, route, request
+
+import os #for auto detect separator in system path
+from pathlib import Path #for detect script place
+path = Path(__file__).parent.absolute() #detect script place
+
+
+def testWriteToFile():
+    file = open(str(path)+os.sep+'testFolder'+os.sep+"testFile.txt","w") #open/create file for write data
+    file.write('bla bla bla test text in file') #write test data file
+    file.close() #close file after write
+
+
+def testReadFromFile():
+    file = open(str(path)+os.sep+'testFolder'+os.sep+"testFile.txt","r") #open file for read
+    data = file.readline() #read one line
+    file.close()
+    return data + ' was read from file'
+
+def writeTextToFile(text):
+    file = open(str(path)+os.sep+'testFolder'+os.sep+"testFile.txt","w")
+    file.write(text) #same as above but used text from http request from clien side
+    file.close()
+
+@route('/write/',method='POST') #for post method, in case http://demotest.pythonanywhere.com/write/
+def uploadText():
+    rq = request.params #both post and get data universal dictionary
+    print(str(rq))
+    clicks = rq.clicks or -1
+    clicks = str(clicks)
+    writeTextToFile(clicks)
+    return "error was in clicks write process" if(clicks == "-1") else clicks + " clicks was written on server"
+
+@route('/read/') #for get method, just read data from server, in case http://demotest.pythonanywhere.com/read/
+def downloadText():
+    file = open(str(path)+os.sep+'testFolder'+os.sep+"testFile.txt","r")
+    data = file.readline()
+    return data + ' was read from file' #return response to libgdx client
+
+@route('/') #will be used default case, f.e. http://demotest.pythonanywhere.com
+def hello_world():
+    testWriteToFile()
+    text = testReadFromFile()
+    return 'Hello from Bottle demo application!' + ' '+str(path) + '\n' + text
+
+
+
+application = default_app()
+
+ 
