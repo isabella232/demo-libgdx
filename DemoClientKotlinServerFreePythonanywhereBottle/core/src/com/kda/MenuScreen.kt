@@ -46,7 +46,7 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
     private fun writeServer(){
         var serverResponse = "test write text"
         val req = HttpRequest(HttpMethods.POST)
-        req.url = ""
+        req.url = "http://demotest.pythonanywhere.com/write/"
 //        var par = UIMap<String, String>()
 //        par.put("clicks",clicks.toString())
         val par = mapOf<String,String>("clicks" to "$clicks")
@@ -54,15 +54,15 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
         
         Gdx.net.sendHttpRequest(req, object: HttpResponseListener{
             override fun cancelled() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                labelShowServer!!.setText("write request was cancelled")
             }
     
             override fun failed(t: Throwable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                labelShowServer!!.setText("write request was failed")
             }
     
             override fun handleHttpResponse(httpResponse: HttpResponse?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                labelShowServer!!.setText(httpResponse!!.resultAsString)
             }
         })
         
@@ -71,6 +71,21 @@ class MenuScreen(val game:KDA) : ScreenAdapter() {
     /**read clicks from server and show it as label text*/
     private fun readServer(){
         var serverResponse = "test read text"
+        val req = HttpRequest(HttpMethods.GET)
+        req.url = "http://demotest.pythonanywhere.com/read/"
+        Gdx.net.sendHttpRequest(req, object: HttpResponseListener{
+            override fun cancelled() {
+                labelShowServer!!.setText("read request was cancelled")
+            }
+        
+            override fun failed(t: Throwable?) {
+                labelShowServer!!.setText("read request was failed")
+            }
+        
+            override fun handleHttpResponse(httpResponse: HttpResponse?) {
+                labelShowServer!!.setText(httpResponse!!.resultAsString)
+            }
+        })
     
         labelShowServer!!.setText(serverResponse)
     }
