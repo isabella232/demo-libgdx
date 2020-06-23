@@ -1,0 +1,43 @@
+/*plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}*/
+
+//new stuff for proguard
+
+apply plugin: 'application'
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.guardsquare:proguard-gradle:7.0.0'
+    }
+}
+
+
+task proguard(type: proguard.gradle.ProGuardTask) {
+    configuration 'proguard-rules.pro'
+    printmapping 'jarPlace/out.map'
+    if (System.getProperty('java.version').startsWith('1.')) {
+        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+    } else {
+        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+    }
+    injars 'jarPlace/base.jar'
+    outjars 'jarPlace/prot.jar'
+}
