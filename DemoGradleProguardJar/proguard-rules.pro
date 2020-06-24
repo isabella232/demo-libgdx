@@ -29,7 +29,8 @@
     public static void main(java.lang.String[]);
 }
 
--keep public class !com.github.healingdrawing.bvc**,!animation**,!background**,!ball**,!cfg**,!character**,!court**,!geometry**,!gui**,!languages**,!saveload**,!sfx**,!story**,!versus**,!vfx**,!web** { *; }
+-keep public class !com.github.healingdrawing.bvc**,!animation**,!background**,!ball**,!cfg**,!court**,
+!character**,!geometry**,!gui**,!languages**,!saveload**,!sfx**,!story**,!versus**,!vfx**,!web** { *; }
 
 #-dontshrink
 
